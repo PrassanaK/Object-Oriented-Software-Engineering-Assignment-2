@@ -1,0 +1,71 @@
+1.---Packages
+My program is divided into packages where each package contains a group of related classes.
+The State package contains all classes related to the state pattern. The Robot Context class
+contains a RobotState object that is initialized to null. The setState() method sets the state 
+object to whatever state the parameter is. The getState() method returns a RobotState object. 
+the doCommand() method in RobotContext calls the doCommand in the RobotState interface. The 
+doCommand() method in the RobotState subclasses set the state depending on the  command it takes in.
+The toString() methods simply return a string indicating it's state to be used as a comparator.
+
+The Observer package contains all classes related to the observer pattern. RobotSubject is the event
+source. It has an EnvironmentObserver object as a field variable. The setObserver() method sets the 
+EnvironmentObserver depending on the situation. The notify() method calls the udpate method on the
+observer and the appropriate actions will take place depending on the results. EnvironmentObserver
+is the interface for the Observer pattern. The update method will send the environmental readings
+depending on whether the visibility falls below 4km or above 5km.
+
+The Controller package contains the class which handles all the processes related to command input.
+it has a EarthComm, Sensors, EngineSystem and SoilAnalyser objects and also track of its angle and
+total distance driving. It's run() method calls the pollCommand() method from EarthComm and does various
+checks on it to ensure that it is valid and that the appropriate actiona is carried out depending on
+what command is recieved.
+
+The "edu.curtin.comp2003.rovor" package contains all of the predefined classes as per Dave's instruction.
+For the case of this assignment I have only implemented each method as stubs.
+
+The Main package contains the Main.java class which creates a thread and executes the code.
+
+The reason I didn't have it  in the traditional MVC packages is because this system doesn't have a view
+since there is technically no user interface, unless someone is giving out free tickets to Mars. Also 
+My Model and Controller have sort been combined into one in the RobotController Class. Therefore I decided
+to split some of the classes into packages that indicate their design pattern.
+
+2.---Appropriate Error Handling
+When a command is received from EarthComm.pollCommand() it is first checked to make sure that it is not null,
+else it is invalid. If a command is recieved and it is not D, T, S, E or P then it is invalid as well. If the
+command is D and it is not accompanied by distance value then the command is invalid. If D is invoked while the
+robot is in its analysing state, command is invalid. If robot state is not driving then it will start driving.
+If D is invoked while robot state is already driving, then it will override the previous D command.
+
+In RobotContext, the constructor initializes the state to null, therefore its getState() method catches a 
+NullPointerException in the case that is it still null;
+
+in RobotController, InterruptedException is handled because we are causing the Thread to sleep in this catches
+the exception in the case that the Thread is interrupted
+
+If T command is invoked without an accompanying angle then the command is invalid. If T is invoked while 
+analysing, then command is invalid. In all other cases T will be valid.
+
+If S command is invoked while the robot is driving then the command is invalid.
+
+If robot is analysing soil the results are checked to make sure they're not null.
+
+3.---Dependency Injection
+The RobotController contructor takes in required objects through it's parameters. Namely EarthComm, EngineSystem
+SoilAnalyser and Sensors.
+
+4.---Use of polymorphism #1
+For the State pattern each state tends to work independently, so that each implementation can be looked 
+independently in order to understand that states behaviour. Such is the case for StoppedState, DrivingState and
+AnalysingState. Each of these implementations changes the state of the robot depending on what command is 
+received.
+
+5.---Use of polymorphism #2
+For the Observer pattern whenever an instance of a concrete observer is created, it registers itself with the
+subject by calling the setObserver() method. Since each concrete observer has its own implementation of the 
+abstract method update(), every registered observer changes its state accordingly. In this case the observer
+pattern listens for when the visibility either falls below 4km or goes above 5km in which case the appropriate
+concrete observer is created and set.
+
+6.---UML
+See UML diagram.
